@@ -1,10 +1,13 @@
 package com.gentheowl.aomc_utils.datagen;
 
 import com.gentheowl.aomc_utils.AOMCUtils;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.triggers.*;
-import net.minecraft.advancements.predicates.MobEffectsPredicate;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -12,14 +15,17 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class ModAdvancements {
@@ -80,7 +86,7 @@ public class ModAdvancements {
                         true,
                         false
                 )
-                .addCriterion("all_effects", EffectsChangedTrigger.TriggerInstance.hasEffects(allEffects()))
+                .addCriterion("all_effects", vanillaAllEffectsCriterion(wrapperLookup))
                 .save(consumer, ALL_EFFECTS_ID.toString());
 
         AdvancementHolder COMBAT_START = challenge(consumer, ALL_EFFECTS, Items.NETHERITE_SWORD,
@@ -193,45 +199,30 @@ public class ModAdvancements {
     }
 
 
-    private static MobEffectsPredicate.Builder allEffects() {
-        MobEffectsPredicate.Builder builder = MobEffectsPredicate.Builder.effects();
+    /**
+     * HDWGH2 must require exactly the same effects as vanilla "How Did We Get Here?".
+     * Instead of hand-maintaining a copy of the list (which drifted out of sync before,
+     * making the advancement impossible), parse vanilla's own advancement JSON off the
+     * classpath and reuse its criterion verbatim.
+     */
+    private static Criterion<?> vanillaAllEffectsCriterion(HolderLookup.Provider registries) {
+        String path = "/data/minecraft/advancement/nether/all_effects.json";
+        try (InputStream in = ModAdvancements.class.getResourceAsStream(path)) {
+            if (in == null) {
+                throw new IllegalStateException("Vanilla advancement not found on classpath: " + path);
+            }
+            JsonElement json = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
+            Advancement vanilla = Advancement.CODEC.parse(ops, json).getOrThrow();
 
-        builder.and(MobEffects.ABSORPTION);
-        builder.and(MobEffects.BAD_OMEN);
-        builder.and(MobEffects.BLINDNESS);
-        builder.and(MobEffects.CONDUIT_POWER);
-        builder.and(MobEffects.BREATH_OF_THE_NAUTILUS); // Breath of the Nautilus (same as Conduit Power in code)
-        builder.and(MobEffects.DARKNESS);
-        builder.and(MobEffects.DOLPHINS_GRACE);
-        builder.and(MobEffects.FIRE_RESISTANCE);
-        builder.and(MobEffects.GLOWING);
-        builder.and(MobEffects.HASTE); // Haste
-        builder.and(MobEffects.HERO_OF_THE_VILLAGE);
-        builder.and(MobEffects.HUNGER);
-        builder.and(MobEffects.INFESTED);
-        builder.and(MobEffects.INVISIBILITY);
-        builder.and(MobEffects.JUMP_BOOST);
-        builder.and(MobEffects.LEVITATION);
-        builder.and(MobEffects.MINING_FATIGUE); // Mining Fatigue
-        builder.and(MobEffects.NAUSEA); // Nausea
-        builder.and(MobEffects.NIGHT_VISION);
-        builder.and(MobEffects.OOZING);
-        builder.and(MobEffects.POISON);
-        builder.and(MobEffects.RAID_OMEN);
-        builder.and(MobEffects.REGENERATION);
-        builder.and(MobEffects.RESISTANCE); // Resistance
-        builder.and(MobEffects.SLOW_FALLING);
-        builder.and(MobEffects.SLOWNESS); // Slowness
-        builder.and(MobEffects.SPEED); // Speed
-        builder.and(MobEffects.STRENGTH); // Strength
-        builder.and(MobEffects.TRIAL_OMEN);
-        builder.and(MobEffects.WATER_BREATHING);
-        builder.and(MobEffects.WEAKNESS);
-        builder.and(MobEffects.WEAVING);
-        builder.and(MobEffects.WITHER);
-        builder.and(MobEffects.WIND_CHARGED);
-
-        return builder;
+            Criterion<?> criterion = vanilla.criteria().get("all_effects");
+            if (criterion == null) {
+                throw new IllegalStateException("Criterion 'all_effects' missing from " + path);
+            }
+            return criterion;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private static Identifier mod_id(String str) {
