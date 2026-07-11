@@ -18,7 +18,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -148,7 +147,7 @@ public class ModAdvancements {
         AdvancementHolder SUMMIT_OLYMPUS = Advancement.Builder.advancement()
                 .parent(OLYMPUS_GATE)
                 .display(
-                        Blocks.END_PORTAL,
+                        Items.END_PORTAL_FRAME,
                         Component.literal("BMPOAT").withStyle(net.minecraft.ChatFormatting.RED),
                         Component.literal("Construct the final altar."),
                         null,

@@ -4,7 +4,7 @@ package com.gentheowl.aomc_utils.advancement.combat;
 import com.gentheowl.aomc_utils.advancement.core.persistent.PlayerCounters;
 import com.gentheowl.aomc_utils.advancement.core.SimpleAdvancement;
 import com.gentheowl.aomc_utils.datagen.ModAdvancements;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,8 +26,8 @@ public final class Kill1000EndermenAdvancement extends SimpleAdvancement {
 
     @Override
     public void register() {
-        ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, attacker, killed, damageSource) -> {
-            if (!(attacker instanceof ServerPlayer player)) return;
+        ServerLivingEntityEvents.AFTER_DEATH.register((killed, damageSource) -> {
+            if (!(killed.getKillCredit() instanceof ServerPlayer player)) return;
             if (!hasParent(player) || hasThis(player)) return;
 
             if (killed.getType() != EntityTypes.ENDERMAN) return;
