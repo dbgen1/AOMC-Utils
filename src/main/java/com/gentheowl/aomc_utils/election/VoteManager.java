@@ -124,8 +124,7 @@ public class VoteManager {
         }
 
         // already voted (results file exists) — prevent another vote
-        Path resultFile = RESULTS_DIR.resolve(uuid + ".json");
-        if (Files.exists(resultFile)) {
+        if (hasVoted(uuid)) {
             player.sendSystemMessage(Component.literal("You have already submitted your vote and cannot start another one.")
                     .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
             return;
@@ -182,6 +181,10 @@ public class VoteManager {
 
     public static void cancelSession(UUID playerUuid) {
         sessions.remove(playerUuid);
+    }
+
+    public static boolean hasVoted(UUID uuid) {
+        return Files.exists(RESULTS_DIR.resolve(uuid + ".json"));
     }
 
     public static boolean isVotingEnabled() {
