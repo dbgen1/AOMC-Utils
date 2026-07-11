@@ -8,6 +8,7 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 
 import java.util.Map;
 
@@ -15,10 +16,10 @@ public final class KillBossAdvancement extends SimpleAdvancement {
     private final AdvancementHolder advancement;
     private static final Map<EntityType<?>, PlayerCounters.CounterKey> BOSS_COUNTERS =
             Map.of(
-                    EntityType.ENDER_DRAGON, PlayerCounters.CounterKey.DRAGON_KILLS,
-                    EntityType.WARDEN, PlayerCounters.CounterKey.WARDEN_KILLS,
-                    EntityType.WITHER, PlayerCounters.CounterKey.WITHER_KILLS,
-                    EntityType.ELDER_GUARDIAN, PlayerCounters.CounterKey.ELDER_GUARDIAN_KILLS
+                    EntityTypes.ENDER_DRAGON, PlayerCounters.CounterKey.DRAGON_KILLS,
+                    EntityTypes.WARDEN, PlayerCounters.CounterKey.WARDEN_KILLS,
+                    EntityTypes.WITHER, PlayerCounters.CounterKey.WITHER_KILLS,
+                    EntityTypes.ELDER_GUARDIAN, PlayerCounters.CounterKey.ELDER_GUARDIAN_KILLS
             );
 
     public KillBossAdvancement(MinecraftServer server) {

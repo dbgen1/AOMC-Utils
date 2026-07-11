@@ -9,6 +9,7 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 
 public final class Kill1000PiglinsAdvancement extends SimpleAdvancement {
     private static final int TARGET = 1000;
@@ -31,7 +32,7 @@ public final class Kill1000PiglinsAdvancement extends SimpleAdvancement {
 
             // piglins (not zombified)
             EntityType<?> t = killed.getType();
-            if (t != EntityType.PIGLIN && t != EntityType.PIGLIN_BRUTE) return;
+            if (t != EntityTypes.PIGLIN && t != EntityTypes.PIGLIN_BRUTE) return;
 
             int now = increment(player, PlayerCounters.CounterKey.PIGLIN_KILLS);
 

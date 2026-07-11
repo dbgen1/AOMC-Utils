@@ -18,7 +18,7 @@ public class VoteEvents {
         if (!VoteManager.isVotingEnabled()) return; // voting disabled
         if (!VoteManager.eligibility.getOrDefault(player.getUUID(), false)) return; // not eligible
 
-        player.displayClientMessage(Component.literal("A vote is currently open! Use /vote to participate.")
-                .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)), false);
+        player.sendSystemMessage(Component.literal("A vote is currently open! Use /vote to participate.")
+                .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
     }
 }

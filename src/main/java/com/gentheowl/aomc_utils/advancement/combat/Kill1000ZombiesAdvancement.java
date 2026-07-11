@@ -8,6 +8,7 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 
 public final class Kill1000ZombiesAdvancement extends SimpleAdvancement {
     private static final int TARGET = 1000;
@@ -29,7 +30,7 @@ public final class Kill1000ZombiesAdvancement extends SimpleAdvancement {
             if (!hasParent(player) || hasThis(player)) return;
 
             EntityType<?> t = killed.getType();
-            if (t != EntityType.ZOMBIE && t != EntityType.HUSK && t != EntityType.DROWNED) return;
+            if (t != EntityTypes.ZOMBIE && t != EntityTypes.HUSK && t != EntityTypes.DROWNED) return;
 
             int now = increment(player, PlayerCounters.CounterKey.ZOMBIE_KILLS);
 

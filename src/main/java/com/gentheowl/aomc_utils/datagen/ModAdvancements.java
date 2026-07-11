@@ -2,7 +2,9 @@ package com.gentheowl.aomc_utils.datagen;
 
 import com.gentheowl.aomc_utils.AOMCUtils;
 import net.minecraft.advancements.*;
-import net.minecraft.advancements.criterion.*;
+import net.minecraft.advancements.triggers.*;
+import net.minecraft.advancements.predicates.MobEffectsPredicate;
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
@@ -62,7 +65,7 @@ public class ModAdvancements {
                         true, // Announce it to chat
                         false // Hide it in the advancement tab until it's achieved
                 )
-                .addCriterion("killed_stuart", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(entityTypes, EntityType.WANDERING_TRADER)))
+                .addCriterion("killed_stuart", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(entityTypes, EntityTypes.WANDERING_TRADER)))
                 // Give the advancement an id
                 .save(consumer, KILL_STUART_ID.toString());
 
